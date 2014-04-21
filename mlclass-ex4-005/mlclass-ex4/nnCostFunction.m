@@ -87,43 +87,38 @@ y = yvectorized;
 
 J = 1/m * sum(sum(-y' .* log(h) - (1-y)' .* log(1 - h) )); 
 
+% regularize J
 theta_adjusted1 = Theta1;
 theta_adjusted1(:,1) = 0;
-
 theta_adjusted2 = Theta2;
 theta_adjusted2(:,1) = 0;
-
 J = J + lambda/(2*m) * sum(sum( theta_adjusted1.^2 ));
 J = J + lambda/(2*m) * sum(sum( theta_adjusted2.^2 ));
 
 % Back propagation:
-Delta1 = 0;
-Delta2 = 0;
+Delta1 = zeros(size(Theta1));
+Delta2 = zeros(size(Theta2));
 for t = 1:m 
   % 1. calculate activations
-  a1 = [1; X(t,:)'];
-
-  z2 = Theta1 * a1;
-  a2 = [ 1; sigmoid(z2) ];
-
-  z3 = Theta2 * a2;
-  a3 = (sigmoid(z3));
+  % take from above
 
   % 2. delta_3
-  delta_3 = (a3 - y(t)');
+  delta_3 = (a3(:,t) - y(t,:)');
 
   % 3. hidden layer l = 2
-  delta_2 = ( Theta2' * delta_3 ) .* ([0; sigmoidGradient(z2)]);
+  sg = (a2(:,t) .* (1 - a2(:,t)));
+
+  delta_2 = ( Theta2' * delta_3 ) .* sg;
 
   % 4. Accumulate gradient
   delta_2 = delta_2(2:end);
 
-  Delta1 = Delta1 + delta_2 * a1';
-  Delta2 = Delta2 + delta_3 * a2';
+  Delta1 = Delta1 + delta_2 * a1(:,t)';
+  Delta2 = Delta2 + delta_3 * a2(:,t)';
 end
 
-Theta1_grad = 1/m * Delta1;
-Theta2_grad = 1/m * Delta2;
+Theta1_grad = 1/m * Delta1 + lambda/m * theta_adjusted1;
+Theta2_grad = 1/m * Delta2 + lambda/m * theta_adjusted2;
 
 % -------------------------------------------------------------
 
