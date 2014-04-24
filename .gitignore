@@ -3,3 +3,4 @@ __MACOSX
 *.pdf
 *.zip
 ml_login_data.mat
+*/**/octave-core
