@@ -21,14 +21,13 @@ sigma2 = zeros(n, 1);
 %               should contain variance of the i-th feature.
 %
 
+mu = 1/m * sum(X,1);
+diff = bsxfun(@minus, X, mu); % broadcast here
+sigma2 = 1/m * sum(diff.^2);
 
-
-
-
-
-
-
-
+% transform into column vectors
+mu = mu';
+sigma2 = sigma2';
 
 % =============================================================
 
